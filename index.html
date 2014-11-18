@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quick Check on Storm Damage</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Quick Check on Storm Damage">
+  <meta name="author" content="Randy Qin">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Quick Check on Storm Damage</h1>
+    <h2>Storm Hits and Hurts (1950 - 2011)</h2>
+    <p>Randy Qin<br/>SkywalkerDS</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>What to expect when storm hit?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Damage to human health (injuries, deaths)</li>
+<li>Damage to property (millions of dollars)</li>
+<li>Historical data is good for planning (save lives and save money!)</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Under the Hood</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The original data is from NOAA, has ~1 million rows, with weather events and damages from 1950 to 2011.  We aggregated the data for each events (985 of them) for plots.</p>
+
+<pre><code class="r">stormDMG &lt;- read.csv(&quot;storm-damage.csv&quot;)
+stormDMG[656:663,]
+</code></pre>
+
+<pre><code>##       X           EVTYPE HDMG      PDMG
+## 656 656      STORM SURGE   51 763.53604
+## 657 657 STORM SURGE/TIDE   16 641.18800
+## 658 658  STREAM FLOODING    0   0.00000
+## 659 659     STREET FLOOD    0   0.00000
+## 660 660  STREET FLOODING    0   0.00000
+## 661 661      STRONG WIND  383 175.24145
+## 662 662 STRONG WIND GUST    0   0.00000
+## 663 663     STRONG WINDS   28   2.31479
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Super Simple User Interface, Just imagine...</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Select a few top damaging weather events or segment of top events</li>
+<li>Choose type of damage to human health or property</li>
+<li>Result is sorted and plotted with the worst at the top</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>See it in action, Now!</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Deployed as Shiny App</li>
+</ul>
+
+<p><a href="http://skywalkerds.shinyapps.io/storm-app/">http://skywalkerds.shinyapps.io/storm-app/</a></p>
+
+<ul>
+<li>Source code available on GitHub</li>
+</ul>
+
+<p><a href="http://github.com/skywalkerDS/shiny-apps">http://github.com/skywalkerDS/shiny-apps</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='What to expect when storm hit?'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Under the Hood'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Super Simple User Interface, Just imagine...'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='See it in action, Now!'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
