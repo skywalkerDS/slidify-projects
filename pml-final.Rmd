@@ -1,5 +1,5 @@
 ---
-title: "Machine Learning: Predict the Manner of Exercise"
+title: "Predict the Manner of Exercise"
 author: "Randy Qin"
 date: "Wednesday, November 19, 2014"
 output: html_document
@@ -33,26 +33,27 @@ pml_data <- read.csv("pml-training.csv", na="", as.is=T)
 dim(pml_data)
 ```
 
-This is a fairly large dataset, with 160 attributes.  Since we are interested in measurements from sensors, we want to drop the non-numeric data columns, clean out <NA>s, and make the categoy varible 'classe' as the predictor.
+This is a fairly large dataset, with 160 attributes.  Since we are interested in measurements from sensors, we want to drop the non-numeric data columns and make the categoy varible 'classe' as the output.
 
 ```{r}
-# catch the result classes
+# catch the result classes, the last column 
 classe <- pml_data[,ncol(pml_data)]
 # drop any non-numeric columns
 col_nums <- sapply(pml_data, is.numeric)
 pml <- pml_data[,col_nums]
 # only keep the measures
 pml <- pml[,-c(1:4)]
-# keep the columns, then add in predictor classe 
+# keep the columns, then add in output: classe 
 col_ds <- colnames(pml)
 pml <- cbind(pml, classe)
 colnames(pml)
 summary(pml$classe)
 ```
+As the result, predictors now stand at 52.
 
 ### Build the model
 
-All models start with traning and test sets preparation.  Considering the large size of dataset, the typical 70:30 split for training and test sets will produce a large training set.  We start with a training set with low thousands of records, a 15:85 split.
+All models start with traning and test sets preparation.  Considering the large size of dataset, we choose to use a training set with low thousands of records, a 15%-85% partition seems to be a good start.
 
 ```{r, message=FALSE}
 library(caret)
@@ -66,11 +67,11 @@ testing <- pml[-inTrain,]
 dim(training);dim(testing)
 ```
 
-This ~3000 training set is used for benchmarking the models below.
+This ~3000 training set is used in model building and benchmarking below.
 
 #### Cross validation and sample error
 
-CART model: The default 25-reps Bootstrapping for training vs 10-fold cross validation repeating 3 times: 
+For CART model, we use the default 25-reps bootstrap cross validation and 10-fold cross validation (repeating 3 times): 
 
 ```{r}
 library(rpart)
@@ -80,11 +81,11 @@ cvCtrl <- trainControl(method="repeatedcv", repeats=3)
 tree2 <- train(classe ~ ., data=training, method='rpart', tuneLength=30, trControl=cvCtrl)
 ```
 
-To save space here, the tree results are not included but can be reproduced easily.  The 10 fold cross-validation training takes longer than bootstrap, for about 30 seconds, but the accuracy increased from bootstrap's 45% to 81%. 
+To save space, the tree results are not included here but can be reproduced easily.  The training with 10 fold cross-validation takes longer than bootstrap to complete, in about 30 seconds, but the accuracy increased to 81% from bootstrap's 45%. 
 
 #### The choices of model
 
-Besides CART, we use multiple popular predication models and the results of accuray and performance are listed here:  
+While CART model's 81% accuracy is pretty encouraging, we also tried multiple popular predication models. The results of accuray and performance are:  
 
 ```{r, eval=FALSE}
 # LDA
@@ -97,14 +98,14 @@ library(gbm)
 fit_bt <- train(classe ~ . , method='gbm', data=training, verbose=F)
 ```
 
-As a summary:
+What we have found during model building:
 
 + LDA is fast, accuracy is 70% in 8 seconds;
 + Naive Bayes has very similar accuracy as LDA, 71%, but it takes 830 seconds(!!!);
 + GBM is really good, accuracy 94%, training takes 360 seconds; and
 + CART accuracy 81% (10-fold, 3 reps), training takes 30 seconds
 
-Before we choose GBM as our pick of model, let us check out the random forest:
+The model Decision tree with boosting (GBM) clearly is leading pack in our study.  But before we claim GBM as our pick of model, let us check out the random forest:
 
 ```{r, message=FALSE}
 library(randomForest)
@@ -114,25 +115,43 @@ rf_tree <- randomForest(classe ~ . , data=training, prox=T)
 rf_tree
 ```
 
-Very impressive! 96% accuracy in 24 seconds of training, we have our winner model, Random Forest.
+Very impressive! 3.6% sample error after 24 seconds of training.
+
+As a summary:
+
+Model | Accuracy (Training set size 2946) | Training time (second)
+--- | --- | ---
+CART (25 reps bootstrap) | 45% | 19
+CART (10-fold cross-validation, 3 reps) | 81% | 36 
+LDA | 70% | 8
+Naive BAyes | 71% | 830
+GBM | 94% | 360
+Random Forest | 96% | 24 
+
+We have our winner model, Random Forest.
 
 ### Prediction
 
-With the 96% accuracy, there is no meed to increase the size of trainging set.   We can start the prediction now.  
+With the 96% accuracy, there is no need to increase the size of trainging set of our Random Forest model.   
 
-Remember the original dataset? It was transformed when we chose data fields for modeling.  For the real prediction, the test data must be in the same format as the training and testing sets, so We take advantage of the column list we kept to pick the columns from the real test data:
+Because the original dataset was transformed when we chose data fields in model bulding, so for real prediction the test data must be in the same format as the training set.  We take advantage of the column list kept when we prepared the training set, and use it to select the columns and format the real test data:
 
 ```{r}
 pml_real <- read.csv("pml-testing.csv")
 pml_cases <- subset(pml_real, select=col_ds)
+```
+
+The random forest model works very well in prediction for the 20 cases in our study, and the results have been submitted for evaluation (turn out to be 100% correct!) :
+
+```{r}
 pml_pred <- predict(rf_tree, pml_cases)
-# we hide the result here
+# hide the results
 #pml_pred
 ```
 
 ### Conclusion
 
-For categorized data such as exercise patterns, random forest and boosted tree are the choices of model for prediction, particularly random forest.  With just a smaller training set (and fast training), random forest can predict manner of exercise with 96% accuracy.
+For categorized data such as fitness exercise data, random forest is a good choice of model for prediction.  With quite a small training set (~3000 records), random forest can predict manner of exercise with 96% accuracy very fast (24 seconds).
 
 ```{r, results='hide', echo=FALSE, eval=FALSE}
 ### Appendix: Project submission
